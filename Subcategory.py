@@ -4,17 +4,33 @@ import urllib.request as req
 import re
 
 from Item import Item
+from utils import html_decode
 
 class Subcategory:
     'Подкатегория товаров. Например, для пистолетов: Аникс, Umarex, Ижевск и т.д.'
 
     def __init__(self, url, img_url):
-        html = self.get_html(url)
+        first_html = self.get_html(url)
 
-        self.xml_str += '<subcat name="%s" img="%s">' % (self.get_name(html), img_url)
-        for url in self.get_items_urls(html):
-            item = Item(url)
-            self.xml_str += item.get_xml_str()
+        self.xml_str += '<subcat name="%s" img="%s">' % (self.get_name(first_html), img_url)
+
+        # Первая страница
+        for url in self.get_items_urls(first_html):
+            self.xml_str += "<item>"
+            self.xml_str += url
+            self.xml_str += "</item>"
+            # item = Item(url)
+            # self.xml_str += item.get_xml_str()
+
+        # Остальные страницы
+        for page_url in self.get_pages_urls(first_html):
+            html = self.get_html(page_url)
+            for url in self.get_items_urls(html):
+                self.xml_str += "<item>"
+                self.xml_str += url
+                self.xml_str += "</item>"
+                # item = Item(url)
+                # self.xml_str += item.get_xml_str()
 
         self.xml_str += '</subcat>'
 
@@ -32,6 +48,13 @@ class Subcategory:
         urls = []
         for match in re.finditer('<br><a href="(show_image\.php\?id=\d+)"', str(html, "cp1251")):
             urls.append('http://www.air-gun.ru/' + match.group(1))
+
+        return urls
+
+    def get_pages_urls(self, html):
+        urls = []
+        for match in re.finditer('<a href="(index\.php\?m_id=\d+&amp;pcat=\d+&amp;op_cat=\d+&amp;st=\d+)">', str(html, "cp1251")):
+            urls.append('http://www.air-gun.ru/' + html_decode(match.group(1)))
 
         return urls
 
