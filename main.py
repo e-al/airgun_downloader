@@ -1,3 +1,6 @@
 #!/usr/bin/env python
 
-print("Hey, I'm useful!")
+from Airgun import Airgun
+
+airgun = Airgun()
+print(airgun.get_xml_str())
