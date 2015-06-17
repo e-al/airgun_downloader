@@ -2,7 +2,6 @@ __author__ = 'last5bits'
 
 import urllib.request as req
 import re
-import os
 
 from Subcategory import Subcategory
 from utils import html_decode
@@ -15,7 +14,7 @@ class Category:
         html = self.get_html(url)
 
         # Добавить имя категории
-        self.xml_str += '<category name="%s">' % self.get_name(html) + os.linesep
+        self.xml_str += '<category name="%s">' % self.get_name(html)
 
         # Добавить XML подкатегорий
         for url_and_image in self.get_subcategory_urls_and_images(html):
@@ -25,7 +24,7 @@ class Category:
             subcategory = Subcategory(url, image)
             self.xml_str += subcategory.get_xml_str()
 
-        self.xml_str += '</category>' + os.linesep
+        self.xml_str += '</category>'
 
     def get_xml_str(self):
         return self.xml_str

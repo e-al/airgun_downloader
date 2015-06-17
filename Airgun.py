@@ -1,19 +1,18 @@
 __author__ = 'last5bits'
 
 from Category import Category
-import os
 
 class Airgun:
     'Класс самого верхнего уровня для парсинга air-gun.ru'
 
     def __init__(self):
-        self.xml_str += '<warehouse>' + os.linesep
+        self.xml_str += '<warehouse>'
 
         for url in self.category_urls:
             category = Category(url)
             self.xml_str += category.get_xml_str()
 
-        self.xml_str += '</warehouse>' + os.linesep
+        self.xml_str += '</warehouse>'
 
     def get_xml_str(self):
         return self.xml_str
