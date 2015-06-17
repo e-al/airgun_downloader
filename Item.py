@@ -80,5 +80,6 @@ class Item:
             return ""
         res_list = []
         for name, val in self.characteristics.items():
-            res_list.append('<char name="{0}" val="{1}">'.format(name, val))
+            res_list.append('<char name="{0}" val="{1}"/>'.format(name, val))
         return "".join(res_list)
+
