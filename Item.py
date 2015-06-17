@@ -3,6 +3,7 @@ __author__ = 'e-al'
 import re
 import urllib
 import urllib.request
+from xml.sax.saxutils import escape
 
 class Item:
     """Товар: элемент подкатегории, т.е. конкретная модель пистолета, винтовки, прицела, и т.д"""
@@ -49,9 +50,9 @@ class Item:
         return 0 if not match else match.group("price")
 
     def get_description(self, page_source):
-        desc_re = re.compile('<strong>Описание:</strong><br><br>\s+(?P<desc>.*?)\s*</font>')
+        desc_re = re.compile('<strong>Описание:</strong><br><br>\s+(?P<desc>.*?)\s*(<center>|</font>)')
         match = desc_re.search(page_source)
-        return "" if not match else match.group("desc")
+        return "" if not match else escape(match.group("desc"))
 
     def get_characteristics(self, page_source):
         char_re = re.compile('<li class="active"><a href="#tab1">Характеристики</a>')
@@ -80,6 +81,6 @@ class Item:
             return ""
         res_list = []
         for name, val in self.characteristics.items():
-            res_list.append('<char name="{0}" val="{1}"/>'.format(name, val))
+            res_list.append('<char name="{0}" val="{1}"/>'.format(escape(name), escape(val)))
         return "".join(res_list)
 
