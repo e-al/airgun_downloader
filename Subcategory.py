@@ -1,8 +1,9 @@
 __author__ = 'e-al'
 
-import warnings
 import urllib.request as req
 import re
+
+from Item import Item
 
 class Subcategory:
     'Подкатегория товаров. Например, для пистолетов: Аникс, Umarex, Ижевск и т.д.'
@@ -11,12 +12,13 @@ class Subcategory:
         html = self.get_html(url)
 
         self.xml_str += '<subcat name="%s" img="%s">' % (self.get_name(html), img_url)
-        self.xml_str += '<item>hey</item>'
-        self.xml_str += '<item>ho</item>'
+        for url in self.get_items_urls(html):
+            item = Item(url)
+            self.xml_str += item.get_xml_str()
+
         self.xml_str += '</subcat>'
 
     def get_xml_str(self):
-        warnings.warn('Not implemented yet')
         return self.xml_str
 
     def get_html(self, url):
@@ -25,5 +27,12 @@ class Subcategory:
     def get_name(self, html):
         match = re.search('<title>(.+)<\/title>', str(html, "cp1251"))
         return match.group(1)
+
+    def get_items_urls(self, html):
+        urls = []
+        for match in re.finditer('<br><a href="(show_image\.php\?id=\d+)"', str(html, "cp1251")):
+            urls.append('http://www.air-gun.ru/' + match.group(1))
+
+        return urls
 
     xml_str = ''
