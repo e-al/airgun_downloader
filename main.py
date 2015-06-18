@@ -6,5 +6,4 @@ from Airgun import Airgun
 
 airgun = Airgun()
 xml = airgun.get_xml_str()
-print(xml)
 print(parseString(xml).toprettyxml())

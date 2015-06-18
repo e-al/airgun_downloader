@@ -5,6 +5,7 @@ import re
 
 from Item import Item
 from utils import html_decode
+from xml.dom.minidom import parseString
 
 class Subcategory:
     'Подкатегория товаров. Например, для пистолетов: Аникс, Umarex, Ижевск и т.д.'
@@ -16,21 +17,15 @@ class Subcategory:
 
         # Первая страница
         for url in self.get_items_urls(first_html):
-            self.xml_str += "<item>"
-            self.xml_str += url
-            self.xml_str += "</item>"
-            # item = Item(url)
-            # self.xml_str += item.get_xml_str()
+            item = Item(url)
+            self.xml_str += item.get_xml_str()
 
         # Остальные страницы
         for page_url in self.get_pages_urls(first_html):
             html = self.get_html(page_url)
             for url in self.get_items_urls(html):
-                self.xml_str += "<item>"
-                self.xml_str += url
-                self.xml_str += "</item>"
-                # item = Item(url)
-                # self.xml_str += item.get_xml_str()
+                item = Item(url)
+                self.xml_str += item.get_xml_str()
 
         self.xml_str += '</subcat>'
 

@@ -50,9 +50,10 @@ class Item:
         return 0 if not match else match.group("price")
 
     def get_description(self, page_source):
-        desc_re = re.compile('<strong>Описание:</strong><br><br>\s+(?P<desc>.*?)\s*(<center>|</font>)')
+        desc_re = re.compile('<strong>Описание:</strong><br><br>\s*'
+                             '(<.*?>)*?(?P<desc>(?s).*?)\s*(<.*?>)*?(<center>|</font>)')
         match = desc_re.search(page_source)
-        return "" if not match else escape(match.group("desc"))
+        return "" if not match or not len (match.group("desc")) else escape(match.group("desc"))
 
     def get_characteristics(self, page_source):
         char_re = re.compile('<li class="active"><a href="#tab1">Характеристики</a>')
@@ -64,17 +65,12 @@ class Item:
                              "padding-bottom:2px; border-top: solid 1px #d5d5d5;'><strong>(?P<val>.*?)</strong>")
         chars = dict()
         for match in char_re.finditer(page_source):
-            name, value = match.group("name"), match.group("val")
+            name, value = self.xml_escape(match.group("name")), self.xml_escape(match.group("val"))
             chars[name] = value
         return chars
 
-    def get_xml_str(self):
-        item_attrs = 'name="{0}" art="{1}" price="{2}" img="{3}"'.format(self.title, self.article
-                                                     , "Нет в наличии" if not self.price else self.price, self.img_url)
-        return "<item {0}>{1}{2}</item>".format(item_attrs, self.get_desc_xml(), self.get_characteristics_xml())
-
     def get_desc_xml(self):
-        return "<desc>{0}</desc>".format(self.description)
+        return "<desc>{0}</desc>".format(self.xml_escape(self.description))
 
     def get_characteristics_xml(self):
         if not self.characteristics:
@@ -84,3 +80,23 @@ class Item:
             res_list.append('<char name="{0}" val="{1}"/>'.format(escape(name), escape(val)))
         return "".join(res_list)
 
+    def get_images_xml(self):
+        if not len(self.img_urls):
+            return ""
+        res_list = []
+        for url in self.img_urls:
+            res_list.append('<img>{0}</img>'.format(url))
+        return "".join(res_list)
+
+    def xml_escape(self, str):
+        return escape(str.replace("\n", " ").replace("\r", "").replace("\"", "&quot"))
+
+    def get_xml_str(self):
+        item_attrs = 'name="{0}" art="{1}" price="{2}" img="{3}"'.format(self.xml_escape(self.title)
+                                                                         , self.xml_escape(self.article)
+                                                                         , "Нет в наличии" if not self.price else self.price
+                                                                         , self.img_url)
+
+        return "<item {0}>{1}{2}{3}</item>".format(item_attrs, self.get_desc_xml()
+                                                   , self.get_characteristics_xml()
+                                                   , self.get_images_xml())

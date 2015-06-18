@@ -21,11 +21,11 @@ class Airgun:
         # Пистолеты
         'http://www.air-gun.ru/index.php?m_id=1&op_cat=1&r_id=1&desc=pnevmaticheskie_pistoleti'
         # Винтовки
-        # , 'http://www.air-gun.ru/index.php?m_id=2&op_cat=1&r_id=2&desc=Vintovki_pnevmaticheskie'
+        , 'http://www.air-gun.ru/index.php?m_id=2&op_cat=1&r_id=2&desc=Vintovki_pnevmaticheskie'
         # # Оптика / ЛЦУ
-        # , 'http://www.air-gun.ru/index.php?m_id=18&op_cat=1&r_id=18&desc=Optika_/_LTsU'
+        , 'http://www.air-gun.ru/index.php?m_id=18&op_cat=1&r_id=18&desc=Optika_/_LTsU'
         # # Кобуры, чехлы, кейсы
-        # , 'http://www.air-gun.ru/index.php?m_id=19&op_cat=1&r_id=19&desc=Koburi,_chehli,_keysi'
+         'http://www.air-gun.ru/index.php?m_id=19&op_cat=1&r_id=19&desc=Koburi,_chehli,_keysi'
     ]
 
     xml_str = ''
