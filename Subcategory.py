@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = 'e-al'
+__author__ = 'last5bits'
 
 import urllib.request as req
 import re

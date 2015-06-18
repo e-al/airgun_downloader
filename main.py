@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+__author__ = 'last5bits'
 
 from xml.dom.minidom import parseString
 
