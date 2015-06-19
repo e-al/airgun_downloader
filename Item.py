@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 __author__ = 'e-al'
 
 import re
