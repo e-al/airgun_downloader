@@ -6,6 +6,7 @@ import urllib
 import urllib.request
 from xml.sax.saxutils import escape
 
+
 class Item:
     """Товар: элемент подкатегории, т.е. конкретная модель пистолета, винтовки, прицела, и т.д"""
 

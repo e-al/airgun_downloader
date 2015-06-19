@@ -1,5 +1,6 @@
 __author__ = 'last5bits'
 
+
 def html_decode(s):
     """
     Returns the ASCII decoded version of the given HTML string. This does

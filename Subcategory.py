@@ -6,10 +6,12 @@ import re
 
 from Item import Item
 from utils import html_decode
-from xml.dom.minidom import parseString
+
 
 class Subcategory:
-    'Подкатегория товаров. Например, для пистолетов: Аникс, Umarex, Ижевск и т.д.'
+    """
+    Подкатегория товаров. Например, для пистолетов: Аникс, Umarex, Ижевск и т.д.
+    """
 
     def __init__(self, url, img_url):
         first_html = self.get_html(url)

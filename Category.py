@@ -7,8 +7,11 @@ import re
 from Subcategory import Subcategory
 from utils import html_decode
 
+
 class Category:
-    'Категория товаров: пистолет, винтовка и т.п.'
+    """
+    Категория товаров: пистолет, винтовка и т.п.
+    """
 
     def __init__(self, url):
         self.url = url
