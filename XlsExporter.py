@@ -33,7 +33,10 @@ class XlsExporter:
         self.products_worksheet = ws = self.workbook.add_worksheet('Products')
         fields = ['product_id','name','categories','sku','upc','ean','jan','isbn','mpn','location','quantity','model'
             ,'manufacturer','image_name' ,'requires shipping','price','points','date_added','date_modified'
-            ,'date_available','weight','unit','length','width','height','length unit','status'
+            ,'date_available','weight','unit','length','width','height','length unit','status\nenabled', 'tax_class_id'
+            , 'viewed', 'language_id', 'seo_keyword', 'description', 'meta_description', 'meta_keywords', 'seo_title'
+            , 'seo_h1', 'stock_status_id', 'store_ids', 'layout', 'related_ids', 'tags', 'sort_order', 'substract'
+            , 'minimum'
                   ]
         i = 0
         for field in fields:
@@ -89,7 +92,7 @@ class XlsExporter:
             self.workbook.worksheets()
             for subcat in category:
                 for item in subcat:
-                    imgs, chars = self.process_item(item, item_id, category_id, images_processed, subcat)
+                    imgs, chars = self.process_item(item, item_id, category_id, images_processed, chars_processed, subcat)
                     images_processed += imgs
                     chars_processed += chars
                     item_id += 1
@@ -97,7 +100,7 @@ class XlsExporter:
 
         self.workbook.close()
 
-    def process_item(self, item, item_id, category_id, images_processed, subcat):
+    def process_item(self, item, item_id, category_id, images_processed, chars_processed, subcat):
         self.products_worksheet.write_number(item_id + 1, self.products_fields_positions["product_id"], item_id)
         self.products_worksheet.write(item_id + 1, self.products_fields_positions["name"], item.attrib["name"])
         self.products_worksheet.write(item_id + 1, self.products_fields_positions["categories"], category_id)
@@ -114,11 +117,15 @@ class XlsExporter:
 
         chars = item.findall("char")
 
+        # 1 - id языка по умолчанию
+        language_id = 1
         for char in chars:
-            self.images_worksheet.write_row(images_processed + 1, 0, [item_id, img.text, 0])
-            images_processed += 1
+            # нет возможности различать поля attribute_group и attribute_name, поэтому делаем их одинаковыми
+            self.attributes_worksheet.write_row(chars_processed + 1, 0, [item_id, language_id, char.attrib["name"]
+                , char.attrib["name"], char.attrib["val"]])
+            chars_processed += 1
 
-        return len(images), len(char)
+        return len(images), len(chars)
 
 
 
