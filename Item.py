@@ -24,6 +24,7 @@ class Item:
         self.price = self.get_price(page_source)
         self.description = self.get_description(page_source)
         self.characteristics = self.get_characteristics(page_source)
+        self.img_dir = "img/"
 
     def get_title(self, page_source):
         title_re = re.compile('<title>(?P<title>.+?)</title>')
@@ -44,6 +45,13 @@ class Item:
             path = match.group("path")
             urls.append(base_url + path)
         return urls
+
+    def download_img(self, img_url, out_dir):
+        if out_dir[-1] != '/':
+            out_dir = out_dir + '/'
+        dest = out_dir + img_url.split('/')[-1]
+        urllib.request.urlretrieve(img_url, dest)
+        return dest
 
     def get_price(self, page_source):
         price_re = re.compile('<div align="center"><strong><font size=4 color="B10000">(<h3><strike>.+?</strike></h3>)?'
@@ -87,7 +95,8 @@ class Item:
             return ""
         res_list = []
         for url in self.img_urls:
-            res_list.append('<img>{0}</img>'.format(url))
+            img = self.download_img(url, self.img_dir)
+            res_list.append('<img>{0}</img>'.format(img))
         return "".join(res_list)
 
     def xml_escape(self, str):
@@ -97,7 +106,7 @@ class Item:
         item_attrs = 'name="{0}" art="{1}" price="{2}" img="{3}"'.format(self.xml_escape(self.title)
                                                                          , self.xml_escape(self.article)
                                                                          , "Нет в наличии" if not self.price else self.price
-                                                                         , self.img_url)
+                                                                         , self.download_img(self.img_url, self.img_dir))
 
         return "<item {0}>{1}{2}{3}</item>".format(item_attrs, self.get_desc_xml()
                                                    , self.get_characteristics_xml()

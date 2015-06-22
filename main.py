@@ -10,3 +10,8 @@ xml = airgun.get_xml_str()
 
 print("Content-type: text/xml\n")
 print(parseString(xml).toprettyxml())
+
+with open("test.xml", "w") as f:
+    f.write("Content-type: text/xml\n")
+    f.write(parseString(xml).toprettyxml())
+    f.close()

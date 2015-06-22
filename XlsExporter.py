@@ -49,7 +49,7 @@ class XlsExporter:
         self.categories_worksheet = ws = self.workbook.add_worksheet('Categories')
         fields = ['category_id', 'parent_id', 'name', 'top', 'columns', 'sort_order', 'image_name', 'date_added'
             , 'date_modified', 'language_id', 'seo_keyword', 'description', 'meta_description', 'meta_keywords'
-            , 'seo_title', 'seo_h1', 'store_ids', 'layout', 'status_enabled']
+            , 'seo_title', 'seo_h1', 'store_ids', 'layout', 'status\nenabled']
 
         i = 0
         for field in fields:
@@ -85,30 +85,51 @@ class XlsExporter:
         root = tree.getroot()
 
         category_id = 0
-        item_id = 0
+        item_id = 1
         images_processed = 0
         chars_processed = 0
         for category in root:
-            self.workbook.worksheets()
+            category_id += 1
+            self.categories_worksheet.write_number(category_id, self.categories_fields_positions["category_id"]
+                                                   , category_id)
+            self.categories_worksheet.write(category_id, self.categories_fields_positions["name"]
+                                            , category.attrib["name"])
+            self.categories_worksheet.write_number(category_id, self.categories_fields_positions["parent_id"], 0)
+            self.categories_worksheet.write(category_id, self.categories_fields_positions["top"], "true")
+            self.categories_worksheet.write(category_id, self.categories_fields_positions["status\nenabled"], "true")
+            parent_cat = category_id
             for subcat in category:
+                category_id += 1
+                self.categories_worksheet.write_number(category_id, self.categories_fields_positions["category_id"]
+                                                       , category_id)
+                self.categories_worksheet.write_number(category_id, self.categories_fields_positions["parent_id"]
+                                                       , parent_cat)
+                self.categories_worksheet.write(category_id, self.categories_fields_positions["name"]
+                                                , subcat.attrib["name"])
+                self.categories_worksheet.write(category_id, self.categories_fields_positions["image_name"]
+                                                , subcat.attrib["img"])
+                self.categories_worksheet.write(category_id, self.categories_fields_positions["top"], "false")
+                self.categories_worksheet.write(category_id, self.categories_fields_positions["status\nenabled"]
+                                                , "true")
                 for item in subcat:
                     imgs, chars = self.process_item(item, item_id, category_id, images_processed, chars_processed, subcat)
                     images_processed += imgs
                     chars_processed += chars
                     item_id += 1
-            category_id += 1
 
         self.workbook.close()
 
     def process_item(self, item, item_id, category_id, images_processed, chars_processed, subcat):
-        self.products_worksheet.write_number(item_id + 1, self.products_fields_positions["product_id"], item_id)
-        self.products_worksheet.write(item_id + 1, self.products_fields_positions["name"], item.attrib["name"])
-        self.products_worksheet.write(item_id + 1, self.products_fields_positions["categories"], category_id)
-        self.products_worksheet.write(item_id + 1, self.products_fields_positions["manufacturer"], subcat.attrib["name"])
-        self.products_worksheet.write(item_id + 1, self.products_fields_positions["image_name"], item.attrib["img"])
-        self.products_worksheet.write(item_id + 1, self.products_fields_positions["price"], item.attrib["price"])
-        self.products_worksheet.write(item_id + 1, self.products_fields_positions["description"], item.findall("desc")[0].text)
-
+        self.products_worksheet.write_number(item_id, self.products_fields_positions["product_id"], item_id)
+        self.products_worksheet.write(item_id, self.products_fields_positions["name"], item.attrib["name"])
+        self.products_worksheet.write(item_id, self.products_fields_positions["categories"], category_id)
+        self.products_worksheet.write(item_id, self.products_fields_positions["manufacturer"], subcat.attrib["name"])
+        self.products_worksheet.write(item_id, self.products_fields_positions["image_name"], item.attrib["img"])
+        price = 0 if not item.attrib["price"].isnumeric() else item.attrib["price"]
+        self.products_worksheet.write_number(item_id, self.products_fields_positions["price"], int(price))
+        self.products_worksheet.write(item_id, self.products_fields_positions["description"]
+                                      , item.findall("desc")[0].text)
+        self.products_worksheet.write(category_id, self.products_fields_positions["status\nenabled"], "true")
 
         images = item.findall("img")
         for img in images:
@@ -126,10 +147,3 @@ class XlsExporter:
             chars_processed += 1
 
         return len(images), len(chars)
-
-
-
-
-
-xls = XlsExporter('test.xml', 'test.xls')
-xls.export()
